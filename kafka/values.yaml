@@ -7,11 +7,32 @@ kafka:
     offsetsTopicReplication: 3
     transactionLogReplication: 3
     minIsr: 2
+    defaultReplicationFactor: 3
+    numPartitions: 3
+    autoCreateTopicsEnable: "false"
+    deleteTopicEnable: "true"
     logRetentionHours: 168
     logSegmentBytes: 1073741824
+    numNetworkThreads: 6
+    numIoThreads: 12
+    socketSendBufferBytes: 102400
+    socketReceiveBufferBytes: 102400
+    socketRequestMaxBytes: 104857600
+
   probes:
     readiness: { initial: 60, period: 10, timeout: 10 }
     liveness: { initial: 60, period: 20, timeout: 15 }
+
+  entityOperator:
+    topicOperator:
+      resources:
+        requests: { memory: 512Mi, cpu: "500m" }
+        limits: { memory: 1Gi, cpu: "1000m" }
+    userOperator:
+      resources:
+        requests: { memory: 256Mi, cpu: "250m" }
+        limits: { memory: 512Mi, cpu: "500m" }
+
   metrics:
     enabled: true
     rules: |
@@ -145,22 +166,31 @@ kafka:
 controller:
   replicas: 3
   minAvailable: 2
-  storage: { size: 20Gi, class: nfs-client, deleteClaim: false }
-  jvm: { ms: "1g", mx: "1g" }
+  storage:
+    size: 20Gi
+    class: nfs-client
+    deleteClaim: false
+  jvm: { ms: "2g", mx: "2g" }
   resources:
-    requests: { memory: 1536Mi, cpu: "500m" }
-    limits: { memory: 1536Mi, cpu: "500m" }
+    requests: { memory: 3Gi, cpu: "1000m" }
+    limits: { memory: 3Gi, cpu: "1000m" }
 
 broker:
   replicas: 3
   minAvailable: 2
-  storage: { size: 500Gi, class: nfs-client, deleteClaim: false }
-  jvm: { ms: "1536m", mx: "1536m" }
+  storage:
+    size: 500Gi
+    class: nfs-client
+    deleteClaim: false
+  jvm: { ms: "3g", mx: "3g" }
   resources:
-    requests: { memory: 2Gi, cpu: "1000m" }
-    limits: { memory: 2Gi, cpu: "1000m" }
+    requests: { memory: 5Gi, cpu: "1000m" }
+    limits: { memory: 5Gi, cpu: "1000m" }
 
 ui:
   enabled: true
   image: provectuslabs/kafka-ui:v0.7.2
-  nodePort: 30085
+  nodePort: 30080
+  resources:
+    requests: { memory: 512Mi, cpu: "250m" }
+    limits: { memory: 1Gi, cpu: "500m" }

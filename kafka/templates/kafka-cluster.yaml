@@ -30,6 +30,14 @@ spec:
       transaction.state.log.min.isr: {{ .Values.kafka.config.minIsr }}
       log.retention.hours: {{ .Values.kafka.config.logRetentionHours }}
       log.segment.bytes: {{ .Values.kafka.config.logSegmentBytes }}
+      num.partitions: {{ .Values.kafka.config.numPartitions }}
+      auto.create.topics.enable: {{ .Values.kafka.config.autoCreateTopicsEnable | quote }}
+      delete.topic.enable: {{ .Values.kafka.config.deleteTopicEnable | quote }}
+      num.network.threads: {{ .Values.kafka.config.numNetworkThreads }}
+      num.io.threads: {{ .Values.kafka.config.numIoThreads }}
+      socket.send.buffer.bytes: {{ .Values.kafka.config.socketSendBufferBytes }}
+      socket.receive.buffer.bytes: {{ .Values.kafka.config.socketReceiveBufferBytes }}
+      socket.request.max.bytes: {{ .Values.kafka.config.socketRequestMaxBytes }}
     metricsConfig:
       type: jmxPrometheusExporter
       valueFrom:
@@ -37,5 +45,9 @@ spec:
           name: kafka-metrics
           key: kafka-metrics-config.yml
   entityOperator:
-    topicOperator: {}
-    userOperator: {}
+    topicOperator:
+      resources:
+        {{- toYaml .Values.kafka.entityOperator.topicOperator.resources | nindent 8 }}
+    userOperator:
+      resources:
+        {{- toYaml .Values.kafka.entityOperator.userOperator.resources | nindent 8 }}
