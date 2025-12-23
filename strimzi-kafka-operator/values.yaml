@@ -1,0 +1,106 @@
+replicas: 1
+
+watchNamespaces: []
+watchAnyNamespace: false
+
+defaultImageRegistry: quay.io
+defaultImageRepository: strimzi
+defaultImageTag: 0.49.1
+
+image:
+  registry: quay.io
+  repository: strimzi
+  name: operator
+  tag: 0.49.1
+  imagePullSecrets: []
+
+kafka:
+  image:
+    registry: quay.io
+    repository: strimzi
+    name: kafka
+    tagPrefix: 0.49.1
+
+kafkaConnect:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+topicOperator:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+userOperator:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+kafkaInit:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+kafkaBridge:
+  image:
+    registry: quay.io
+    repository: strimzi
+    tag: 0.33.1
+
+kafkaExporter:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+kafkaMirrorMaker2:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+cruiseControl:
+  image:
+    registry: quay.io
+    repository: strimzi
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 30
+readinessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+resources:
+  limits:
+    memory: 512Mi
+    cpu: 1000m
+  requests:
+    memory: 384Mi
+    cpu: 200m
+
+rbac:
+  create: true
+serviceAccountCreate: true
+serviceAccount: strimzi-cluster-operator
+
+leaderElection:
+  enable: true
+
+logVolume: co-config-volume
+logConfigMap: strimzi-cluster-operator
+logLevel: ${env:STRIMZI_LOG_LEVEL:-INFO}
+fullReconciliationIntervalMs: 120000
+operationTimeoutMs: 300000
+
+dashboards:
+  enabled: false
+  label: grafana_dashboard
+  labelValue: "1"
+
+createGlobalResources: false
+createAggregateRoles: false
+generateNetworkPolicy: true
+generatePodDisruptionBudget: false
+
+podDisruptionBudget:
+  enabled: false
+  maxUnavailable: 1
