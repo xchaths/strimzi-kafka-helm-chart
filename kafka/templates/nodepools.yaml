@@ -1,0 +1,41 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    strimzi.io/cluster: {{ .Values.kafka.name }}
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  roles: [controller]
+  storage:
+    type: persistent-claim
+    size: {{ .Values.controller.storage.size }}
+    class: {{ .Values.controller.storage.class }}
+    deleteClaim: {{ .Values.controller.storage.deleteClaim }}
+  resources:
+    {{- toYaml .Values.controller.resources | nindent 4 }}
+  jvmOptions:
+    -Xms: {{ .Values.controller.jvm.ms | quote }}
+    -Xmx: {{ .Values.controller.jvm.mx | quote }}
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: broker
+  namespace: {{ .Values.namespace }}
+  labels:
+    strimzi.io/cluster: {{ .Values.kafka.name }}
+spec:
+  replicas: {{ .Values.broker.replicas }}
+  roles: [broker]
+  storage:
+    type: persistent-claim
+    size: {{ .Values.broker.storage.size }}
+    class: {{ .Values.broker.storage.class }}
+    deleteClaim: {{ .Values.broker.storage.deleteClaim }}
+  resources:
+    {{- toYaml .Values.broker.resources | nindent 4 }}
+  jvmOptions:
+    -Xms: {{ .Values.broker.jvm.ms | quote }}
+    -Xmx: {{ .Values.broker.jvm.mx | quote }}

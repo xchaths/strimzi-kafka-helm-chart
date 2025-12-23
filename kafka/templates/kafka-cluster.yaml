@@ -1,0 +1,41 @@
+apiVersion: kafka.strimzi.io/v1
+kind: Kafka
+metadata:
+  name: {{ .Values.kafka.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+spec:
+  kafka:
+    version: {{ .Values.kafka.version | quote }}
+    readinessProbe:
+      initialDelaySeconds: {{ .Values.kafka.probes.readiness.initial }}
+      periodSeconds: {{ .Values.kafka.probes.readiness.period }}
+    livenessProbe:
+      initialDelaySeconds: {{ .Values.kafka.probes.liveness.initial }}
+      periodSeconds: {{ .Values.kafka.probes.liveness.period }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      offsets.topic.replication.factor: {{ .Values.kafka.config.offsetsTopicReplication }}
+      transaction.state.log.replication.factor: {{ .Values.kafka.config.transactionLogReplication }}
+      transaction.state.log.min.isr: {{ .Values.kafka.config.minIsr }}
+      log.retention.hours: {{ .Values.kafka.config.logRetentionHours }}
+      log.segment.bytes: {{ .Values.kafka.config.logSegmentBytes }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
